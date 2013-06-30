@@ -1,0 +1,18 @@
+$for(posts)$
+    <article class="digest">
+
+    <h3>
+        <a href="$url$">$title$</a>
+        <span class="date">$date$</span>
+    </h3>
+    $if(teaser)$
+        $teaser$
+    $endif$
+
+    <div class="read_more">
+        <a href="$url$">
+           more &hellip;
+        </a>
+    </div>
+    </article>
+$endfor$

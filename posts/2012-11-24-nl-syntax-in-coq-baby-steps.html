@@ -1,0 +1,375 @@
+---
+title: Natural Language Syntax in Coq: Baby Steps
+---
+
+In a slight diversion from my <a
+    href="http://www.jonmsterling.com/posts/2012-09-14-natural-language-semantics-I.html">path</a>
+toward NL <i>semantics</i> in Martin-Löf Type Theory, I'd like to delve
+a bit into formulating NL <i>syntax</i> in <a
+    href="http://coq.inria.fr">Coq</a>, a dependently typed theorem
+prover based on the <a
+    href="http://en.wikipedia.org/wiki/Calculus_of_inductive_constructions">Calculus of Inductive Constructions</a>.
+
+<!--more-->
+
+<p>We'll begin with a very simple (and underpowered) theory of syntax
+including the following:</p>
+
+<ol>
+    <li><strong>Syntactic categories:</strong> things like <i>Noun</i>,
+    <i>Verb</i>, and <i>Determiner</i>. These classify items in our
+    lexicon.
+    </li>
+
+    <li><strong>Merge:</strong> an operation that combines two nodes to
+    make a larger node. Phrases are built from the lowest head upwards,
+    by merging new nodes onto the head.</li>
+
+    <li><strong>X-Bar Schema:</strong> There are at most two levels of
+    projection from a single head; a head <code>X</code> may merge with an <i>internal
+        argument</i>, projecting a <code>X'</code> node, which may in
+    turn merge with an <i>external argument</i> to project the maximal
+    <code>XP</code> node.</li>
+</ol>
+
+<p>The internal argument is the sister of <code>X</code>, and is called
+its <i>complement</i>; the external argument is the aunt of
+<code>X</code> (the sister of <code>X'</code>), and is called the
+<i>specifier</i>. Therefore, the two kinds of merges that we have
+discussed are referred to as <strong>C-Merge</strong> and
+<strong>S-Merge</strong> respectively.</p>
+
+<p>The schema looks something like this:</p>
+
+<pre>
+              XP                             X
+             / \                            / \
+            /   \                          /   \
+           /     \                        /     \
+          ZP     X'       (or just)      Z      X
+                / \                            / \
+               /   \                          /   \
+              /     \                        /     \
+             YP      X                      Y       X
+</pre>
+
+<p>The latter representation is the same, except the projection-level is
+left to be inferred.</p>
+
+<p>In later posts, I'll revisit our theory with enhancements that will
+make it more able to express natural language syntax.</p>
+
+
+<h2>The Implementation</h2>
+
+<div class="code">
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">String</span> <span class="id" type="var">EquivDec</span> <span class="id" type="var">Bool</span>.<br/>
+<span class="id" type="keyword">Set Implicit Arguments</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">CoreTheory</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We'll start with a few syntactic categories. This is of course
+  not sufficient to do real syntax, but it will do for now.
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="keyword">Inductive</span> <span class="id" type="var">category</span> := <span class="id" type="var">D</span> | <span class="id" type="var">N</span> | <span class="id" type="var">V</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Each constituent is marked by a set of features; in our current
+  theory, features are just a syntactic category, and specifications
+  for internal and external arguments.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Inductive</span> <span class="id" type="var">features</span> : <span class="id" type="keyword">Set</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" type="var">cat</span> : <span class="id" type="var">category</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">iArg</span> : <span class="id" type="var">option</span> <span class="id" type="var">features</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">eArg</span> : <span class="id" type="var">option</span> <span class="id" type="var">features</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Coq allows us to derive decidable equality for categories. This will prove useful below.
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="keyword">Theorem</span> <span class="id" type="var">eq_cat_dec</span> (<span class="id" type="var">a</span> : <span class="id" type="var">category</span>) (<span class="id" type="var">b</span> : <span class="id" type="var">category</span>) : {<span class="id" type="var">a</span> = <span class="id" type="var">b</span>} + {<span class="id" type="var">a</span> &lt;&gt; <span class="id" type="var">b</span>}.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">decide</span> <span class="id" type="var">equality</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Defined</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Program Instance</span> <span class="id" type="var">cat_eq_eqdec</span> : <span class="id" type="var">EqDec</span> <span class="id" type="var">category</span> <span class="id" type="var">eq</span> := <span class="id" type="var">eq_cat_dec</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In our current theory, there are two kinds of arguments:
+  internal and external; an internal argument is lower in the tree
+  than the head, whereas an external argument is higher. We provide
+  selectors for arguments.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Inductive</span> <span class="id" type="var">position</span> := <span class="id" type="var">internal</span> | <span class="id" type="var">external</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">argument_at</span> (<span class="id" type="var">p</span> : <span class="id" type="var">position</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <span class="id" type="var">p</span> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">internal</span> =&gt; <span class="id" type="var">iArg</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">external</span> =&gt; <span class="id" type="var">eArg</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is where it starts to get interesting. We need a predicate
+  that decides whether or not the features <span class="inlinecode"><span class="id" type="var">hfs</span></span> of the head license
+  the features <span class="inlinecode"><span class="id" type="var">fs</span></span> of a constituent which wishes to be merged to it
+  at some position <span class="inlinecode"><span class="id" type="var">p</span></span>. The predicate is satisfied if <span class="inlinecode"><span class="id" type="var">fs</span></span> is
+  saturated, and there is an argument <span class="inlinecode"><span class="id" type="var">arg</span></span> at <span class="inlinecode"><span class="id" type="var">p</span></span> in <span class="inlinecode"><span class="id" type="var">hfs</span></span> whose
+  category is equal to the category of <span class="inlinecode"><span class="id" type="var">fs</span></span>.
+<div class="paragraph"> </div>
+
+ We can say that a node is saturated at a position if there is no
+  specification for an argument present. This is because these
+  specifications are erased after each merge.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">saturated_at</span> (<span class="id" type="var">fs</span> : <span class="id" type="var">features</span>) (<span class="id" type="var">p</span> : <span class="id" type="var">position</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <span class="id" type="var">argument_at</span> <span class="id" type="var">p</span> <span class="id" type="var">fs</span> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">Some</span> <span class="id" type="var">_</span> =&gt; <span class="id" type="var">false</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">None</span>   =&gt; <span class="id" type="var">true</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">fully_saturated</span> (<span class="id" type="var">fs</span> : <span class="id" type="var">features</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">saturated_at</span> <span class="id" type="var">fs</span> <span class="id" type="var">internal</span>) &amp;&amp; (<span class="id" type="var">saturated_at</span> <span class="id" type="var">fs</span> <span class="id" type="var">external</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+First, we determine if a merge is even plausible: for C-merge,
+  the internal argument must not already be saturated; for S-merge,
+  the internal argument must be saturated, and the external argument
+  must not be.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">can_merge_at</span> (<span class="id" type="var">hfs</span> : <span class="id" type="var">features</span>) (<span class="id" type="var">p</span> : <span class="id" type="var">position</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <span class="id" type="var">p</span> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">internal</span> =&gt; <span class="id" type="var">negb</span> (<span class="id" type="var">saturated_at</span> <span class="id" type="var">hfs</span> <span class="id" type="var">internal</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">external</span> =&gt; (<span class="id" type="var">saturated_at</span> <span class="id" type="var">hfs</span> <span class="id" type="var">internal</span>) &amp;&amp; (<span class="id" type="var">negb</span> (<span class="id" type="var">saturated_at</span> <span class="id" type="var">hfs</span> <span class="id" type="var">external</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now, we can check if the merge will be successful, given the
+  syntactic category of each of the participants.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">selects</span> (<span class="id" type="var">p</span> : <span class="id" type="var">position</span>) (<span class="id" type="var">hfs</span> : <span class="id" type="var">features</span>) (<span class="id" type="var">fs</span> : <span class="id" type="var">features</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <span class="id" type="var">argument_at</span> <span class="id" type="var">p</span> <span class="id" type="var">hfs</span> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">Some</span> <span class="id" type="var">arg</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <span class="id" type="var">cat</span> <span class="id" type="var">arg</span> == <span class="id" type="var">cat</span> <span class="id" type="var">fs</span> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="tactic">left</span>  <span class="id" type="var">_</span> =&gt; <span class="id" type="var">Is_true</span> ((<span class="id" type="var">fully_saturated</span> <span class="id" type="var">fs</span>) &amp;&amp; (<span class="id" type="var">can_merge_at</span> <span class="id" type="var">hfs</span> <span class="id" type="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="tactic">right</span> <span class="id" type="var">_</span> =&gt; <span class="id" type="var">False</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">None</span> =&gt; <span class="id" type="var">False</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We now compute the type of a merge at position <span class="inlinecode"><span class="id" type="var">p</span></span>. We require a
+  proof that the head selects for the new node. The resulting node
+  inherits the category of the head, and has its <span class="inlinecode"><span class="id" type="var">iArg</span></span> saturated; if
+  <span class="inlinecode"><span class="id" type="var">p</span></span> is external, that means that the <span class="inlinecode"><span class="id" type="var">eArg</span></span> has also been
+  saturated.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">gen_merge</span> (<span class="id" type="var">N</span> : <span class="id" type="var">features</span> -&gt; <span class="id" type="keyword">Set</span>) (<span class="id" type="var">p</span> : <span class="id" type="var">position</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">forall</span> (<span class="id" type="var">hfs</span> : <span class="id" type="var">_</span>) (<span class="id" type="var">fs</span> : <span class="id" type="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">h</span> : <span class="id" type="var">N</span> <span class="id" type="var">hfs</span>) (<span class="id" type="var">n</span> : <span class="id" type="var">N</span> <span class="id" type="var">fs</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">sel</span> : <span class="id" type="var">selects</span> <span class="id" type="var">p</span> <span class="id" type="var">hfs</span> <span class="id" type="var">fs</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">N</span> {| <span class="id" type="var">cat</span> := <span class="id" type="var">cat</span> <span class="id" type="var">hfs</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">iArg</span> := <span class="id" type="var">None</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">eArg</span> := <span class="id" type="keyword">match</span> <span class="id" type="var">p</span> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">internal</span> =&gt; <span class="id" type="var">eArg</span> <span class="id" type="var">hfs</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">external</span> =&gt; <span class="id" type="var">None</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Finally, we are ready to model nodes. A node is indexed by its
+  features, and may be either a head (minimal projection), or the
+  result of a <span class="inlinecode"><span class="id" type="var">cmerge</span></span> (merging of a complement into internal argument
+  position), or the result of an <span class="inlinecode"><span class="id" type="var">smerge</span></span> (merginf of a specifier into
+  external argument position). The types of the latter two
+  constructors are computed using <span class="inlinecode"><span class="id" type="var">gen_merge</span></span> above.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Inductive</span> <span class="id" type="var">node</span> : <span class="id" type="var">features</span> -&gt; <span class="id" type="keyword">Set</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" type="var">head</span> : <span class="id" type="keyword">forall</span> (<span class="id" type="var">s</span> : <span class="id" type="var">string</span>), <span class="id" type="keyword">forall</span> (<span class="id" type="var">fs</span> : <span class="id" type="var">features</span>), <span class="id" type="var">node</span> <span class="id" type="var">fs</span><br/>
+&nbsp;&nbsp;| <span class="id" type="var">cmerge</span> : <span class="id" type="var">gen_merge</span> <span class="id" type="var">node</span> <span class="id" type="var">internal</span><br/>
+&nbsp;&nbsp;| <span class="id" type="var">smerge</span> : <span class="id" type="var">gen_merge</span> <span class="id" type="var">node</span> <span class="id" type="var">external</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+As a bonus, we provide a function to fold a node into a string.
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="keyword">Fixpoint</span> <span class="id" type="var">to_string</span> {<span class="id" type="var">fs</span> : <span class="id" type="var">_</span>} (<span class="id" type="var">n</span> : <span class="id" type="var">node</span> <span class="id" type="var">fs</span>) : <span class="id" type="var">string</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">match</span> <span class="id" type="var">n</span> <span class="id" type="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">head</span> <span class="id" type="var">s</span> <span class="id" type="var">_</span> =&gt; <span class="id" type="var">s</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">cmerge</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">h</span> <span class="id" type="var">c</span> <span class="id" type="var">_</span> =&gt; <span class="id" type="var">append</span> (<span class="id" type="var">to_string</span> <span class="id" type="var">h</span>) (<span class="id" type="var">append</span> " " (<span class="id" type="var">to_string</span> <span class="id" type="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" type="var">smerge</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">h</span> <span class="id" type="var">s</span> <span class="id" type="var">_</span> =&gt; <span class="id" type="var">append</span> (<span class="id" type="var">to_string</span> <span class="id" type="var">s</span>) (<span class="id" type="var">append</span> " " (<span class="id" type="var">to_string</span> <span class="id" type="var">h</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">CoreTheory</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Examples</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Let's make some convenient notation for merges. Note that <span class="inlinecode"><span class="id" type="var">I</span></span> is
+  the single constructor for the type <span class="inlinecode"><span class="id" type="var">True</span></span>, and serves as the
+  proof-witness that the head selects the merged node.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " head |- comp " := (<span class="id" type="var">cmerge</span> <span class="id" type="var">head</span> <span class="id" type="var">comp</span> <span class="id" type="var">I</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">right</span> <span class="id" type="keyword">associativity</span>, <span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 100).<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Notation</span> " spec -| head " := (<span class="id" type="var">smerge</span> <span class="id" type="var">head</span> <span class="id" type="var">spec</span> <span class="id" type="var">I</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">left</span> <span class="id" type="keyword">associativity</span>, <span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 101).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Let's build up a lexicon.
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">dog</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">head</span> "dog"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{| <span class="id" type="var">cat</span> := <span class="id" type="var">N</span> ; <span class="id" type="var">iArg</span> := <span class="id" type="var">None</span> ; <span class="id" type="var">eArg</span> := <span class="id" type="var">None</span> |}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">love</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">head</span> "love"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{| <span class="id" type="var">cat</span>  := <span class="id" type="var">V</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">iArg</span> := <span class="id" type="var">Some</span> {| <span class="id" type="var">cat</span> := <span class="id" type="var">D</span> ; <span class="id" type="var">iArg</span> := <span class="id" type="var">None</span> ; <span class="id" type="var">eArg</span> := <span class="id" type="var">None</span> |} ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">eArg</span> := <span class="id" type="var">Some</span> {| <span class="id" type="var">cat</span> := <span class="id" type="var">D</span> ; <span class="id" type="var">iArg</span> := <span class="id" type="var">None</span> ; <span class="id" type="var">eArg</span> := <span class="id" type="var">None</span> |}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|}.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">the</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">head</span> "the"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{| <span class="id" type="var">cat</span>  := <span class="id" type="var">D</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">iArg</span> := <span class="id" type="var">Some</span> {| <span class="id" type="var">cat</span> := <span class="id" type="var">N</span> ; <span class="id" type="var">iArg</span> := <span class="id" type="var">None</span> ; <span class="id" type="var">eArg</span> := <span class="id" type="var">None</span> |} ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">eArg</span> := <span class="id" type="var">None</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">I</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">head</span> "I"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{| <span class="id" type="var">cat</span> := <span class="id" type="var">D</span> ; <span class="id" type="var">iArg</span> := <span class="id" type="var">None</span> ; <span class="id" type="var">eArg</span> := <span class="id" type="var">None</span> |}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can now build up some phrases. If they type check, then they
+  are grammatical within our theory.
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">the_dog</span> := <span class="id" type="var">the</span> |- <span class="id" type="var">dog</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">love_the_dog</span> := <span class="id" type="var">love</span> |- <span class="id" type="var">the</span> |- <span class="id" type="var">dog</span>.<br/>
+&nbsp;&nbsp;<span class="id" type="keyword">Definition</span> <span class="id" type="var">I_love_the_dog</span> := <span class="id" type="var">I</span> -| <span class="id" type="var">love</span> |- <span class="id" type="var">the</span> |- <span class="id" type="var">dog</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The last phrase that we constructed represents the following tree:
+
+<pre>
+           V
+          / \
+         /   \
+        /     \
+       I      V
+             / \
+            /   \
+           /     \
+         love    D
+                / \
+               /   \
+              /     \
+             the    dog
+</pre>
+<div class="paragraph"> </div>
+
+ Evaluating our phrase as a string yields <span class="inlinecode">"<span class="id" type="var">I</span></span> <span class="inlinecode"><span class="id" type="var">love</span></span> <span class="inlinecode"><span class="id" type="var">the</span></span> <span class="inlinecode"><span class="id" type="var">dog</span>"</span>.
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="keyword">Eval</span> <span class="id" type="tactic">simpl</span> <span class="id" type="keyword">in</span> <span class="id" type="var">to_string</span> <span class="id" type="var">I_love_the_dog</span>.<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Examples</span>.<br/>
+</div>
+
+
+<h2>Next steps</h2>
+
+<p>Basically, all that this theory provides us is the ability to base
+grammaticality-judgements of merges on the syntactic category of
+consituents and their arguments. This is obvously not enough! Not only
+do we need to make more interesting specifications than syntactic
+category, we also need to include the following notions: phrasal
+movement, agreement, and head movement, to name a few.
+</p>
+
+<p>In addition, it would be prudent to escape the bonds that our current
+argument representation has left us in, and move toward a more minimal
+approach based on a single merge operation; in addition, a notion of
+feature strength (that is, whether a feature must be satisfied locally
+or not) would be an enormous improvement.</p>
+
+<p>In the meanwhile, play around with the <a
+    href="https://github.com/jonsterling/NL-Coq/blob/rev0/BabySteps.v">sources</a>
+to this post and see what you can improve!</p>

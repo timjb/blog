@@ -1,0 +1,27 @@
+\documentclass[class=minimal,border=0pt]{standalone}
+\usepackage{stmaryrd,amssymb,amsfonts,amsmath,qtree}
+\usepackage[silent]{fontspec}
+\usepackage{xltxtra}
+
+\newICUfeature{Contextual}{on}{+calt}
+\defaultfontfeatures{Mapping=tex-text, Ligatures=Historical}
+\setmainfont[Script=Greek, Scale=MatchUppercase, Contextual=on]{Junicode}
+
+
+\begin{document}
+\Tree
+[.$V$
+  [.$D\to V$
+    [.$\forall\alpha.\,(\alpha\to V)\to(\alpha\to V)\quad$ δῆτα ]
+    [.$D\to V$ οἶσθα ]
+  ]
+  [.$D$
+    [.$N\to D$ τὴν ]
+    [.$N$
+      [.$N\to N$ Εὐρυτείαν$\quad$ ]
+      [.$N$ παρθένον ]
+    ]
+  ]
+]
+\end{document}
+

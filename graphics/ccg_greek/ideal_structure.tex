@@ -1,0 +1,21 @@
+\documentclass[class=minimal,border=0pt]{standalone}
+\usepackage{stmaryrd,amssymb,amsfonts,amsmath,qtree}
+\usepackage[silent]{fontspec}
+\usepackage{xltxtra}
+
+\newICUfeature{Contextual}{on}{+calt}
+\defaultfontfeatures{Mapping=tex-text, Ligatures=Historical}
+\setmainfont[Script=Greek, Scale=MatchUppercase, Contextual=on]{Junicode}
+
+
+\begin{document}
+\Tree
+[.$VP$
+  [.$V'$
+    [.$D'$ τὴν$\quad$ Εὐρυτείαν$\quad$ ]
+    [.$V'$ οἶσθα$\quad$ δῆτα ]
+  ]
+  παρθένον
+]
+\end{document}
+

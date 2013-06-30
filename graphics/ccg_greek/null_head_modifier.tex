@@ -1,0 +1,37 @@
+\documentclass[class=minimal,border=0pt]{standalone}
+\usepackage{stmaryrd,amssymb,amsfonts,amsmath,tikz,tikz-qtree}
+\usepackage[silent]{fontspec}
+\usepackage{xltxtra}
+
+\newICUfeature{Contextual}{on}{+calt}
+\defaultfontfeatures{Mapping=tex-text, Ligatures=Historical}
+\setmainfont[Script=Greek, Scale=MatchUppercase, Contextual=on]{Junicode}
+
+\def\ty<#1>{\langle#1\rangle}
+\def\eval#1{$\llbracket$#1$\rrbracket$}
+
+\begin{document}
+
+\begin{tikzpicture}[every node/.style={align=center}]
+
+\Tree
+[.VP
+  [.\node(dp){DP$_i$};
+    [.D τὴν ]
+    [.NP [.A Εὐρυτείαν ] ]
+  ]
+  [.V$'$
+    [.V$'$
+      [.V$'$
+        [.V οἶσθα ]
+        [.A δῆτα ]
+      ]
+      [.N παρθένον ]
+    ]
+   \node(t){—$_i$};
+  ]
+]
+\draw[semithick,->] (t)..controls +(south:5) and +(south:4)..(\subtreeof{dp});
+\end{tikzpicture}
+\end{document}
+
