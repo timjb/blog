@@ -96,9 +96,9 @@ $$\begin{align}
 
 Note that so far, none of our typing rules have admitted non-canonical
 premises, with the result that such a construction cannot escape the
-object language! We now provide a a rule to eliminate equivalences within
+object language! We now provide a rule to eliminate equivalences within
 the object language in a safe way, which we will show to be
-interpretable into canonical terms in the metalanguage:
+interpretable into canonical terms of the metalanguage:
 
 $$\begin{align}
 \frac{\vdash \color{red}{p : A\,`\cong B} \qquad \vdash x : A}{\vdash\text{transport}\ \color{red}{p}\ x : B} \tag{Transport}
