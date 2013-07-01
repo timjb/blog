@@ -48,7 +48,7 @@ $$\begin{align}
 \end{align}$$
 
 $$\begin{align}
-\frac{\vdash b : \mathbf{2} \qquad \vdash t, f : A}{\vdash `\text{if}\ x\ \text{then}\ t\ \text{else}\ f : A} \tag{$\mathbf{2}$-rec}
+\frac{\vdash x : \mathbf{2} \qquad \vdash t, f : A}{\vdash `\text{if}\ x\ \text{then}\ t\ \text{else}\ f : A} \tag{$\mathbf{2}$-rec}
 \end{align}$$
 
 $$\begin{align}
