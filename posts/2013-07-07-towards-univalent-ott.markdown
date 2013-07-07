@@ -24,7 +24,7 @@ $$\begin{align}
 \prod_{\cdot\,:\,\cdot}\cdot, \sum_{\cdot\,:\,\cdot}\cdot \}
 \end{align}$$
 
-And let each code in \mathcal{U} is translated to the equivalent thing
+And let each code in $\mathcal{U}$ be translated to the equivalent thing
 in the metalanguage; we also use $\cdot\to\cdot$ and
 $\cdot\times\cdot$ as shorthands for non-dependent products and sums
 respectively. We have not included a primitive code of equality in the
