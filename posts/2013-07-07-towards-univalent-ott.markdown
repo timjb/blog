@@ -75,7 +75,7 @@ s [Q:S\,=\,T\rangle:T \mapsto (\pi_1Q)\,s
 - **Exercise 1**. Prove that $\lnot\circ(\lnot\circ\lnot):(\mathbf{2}\to\mathbf{2})\,=\,\text{id}_\mathbf{2}:(\mathbf{2}\to\mathbf{2})$.
 - **Exercise 2.** Construct two distinct proofs that $\mathbf{2}:\mathcal{U}\,=\,\mathbf{2}:\mathcal{U}$ and demonstrate that coercion $s[Q\rangle$ respects the particular isomorphism $Q$ chosen.
 - **Exercise 3.** Construct a proof $Q$ that for all $S,T:\mathcal{U}$, $S\times T:\mathcal{U}\,=\,T\times S:\mathcal{U}$, and demonstrate that for all $x,y$, coercion $(x,y)[Q\rangle\mapsto(y,x)$.
-- **Exercise 4.** Extend the type theory we have developed to include computable quotients $S/R:\mathcal{U}$ without introducing axioms to the metalanguage.
+- **Exercise 4.** Extend the type theory we have developed to include computable quotients $S/R:\mathcal{U}$ without introducing non-computable axioms to the metalanguage.
 
 
 [^obseqnow]: Altenkirch, McBride & Swierstra. [Observational Equality,
