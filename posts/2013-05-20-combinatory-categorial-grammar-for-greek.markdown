@@ -27,7 +27,7 @@ Using the null head modifier theory presented by Devine &
 Stephens[^ds2000], we can actually get a reasonable transformational
 representation of the sentence:
 
-<img src="/graphics/ccg_greek/null_head_modifier.png" width="350px" />
+<img src="/graphics/ccg_greek/null_head_modifier.png" width="300px" />
 
 The central conceit is a DP can serve to provide additional information
 to something it adjoins to; intuitively, this is the same as when we say

@@ -73,7 +73,7 @@ main = hakyllWith config $ do
             posts <- take 8 <$> (recentFirst =<< loadAll ("posts/*" .&&. hasNoVersion))
             let archiveCtx =
                     listField "posts" postCtx (return posts) <>
-                    constField "title" "Home"                <>
+                    constField "title" "Jonathan Sterling"                <>
                     field "about" (const $ loadBody "about.markdown") <>
                     defaultContext
 

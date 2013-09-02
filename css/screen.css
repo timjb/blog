@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:600,700,800);
+
 header,section,footer,aside,nav,article,figure {
     display:block;
 }
@@ -7,13 +9,18 @@ header,section,footer,aside,nav,article,figure {
     src:url(/fonts/Junicode.ttf);
 }
 
+
+@font-face {
+    font-family:Computer Modern Serif;
+    src:url(/fonts/cmunrm.otf);
+}
+
 body {
-    font-family:Helvetica;
+    font-family: Palatino, Helvetica;
     font-size:12pt;
     min-width:900px;
     line-height:1.75em;
     text-shadow:-1px 1px #fff;
-    background-color:#fefefe;
     margin:0;
 }
 
@@ -22,8 +29,14 @@ h1 {
     font-size:20pt;
 }
 
-strong,em {
-    font-family:Georgia;
+h1, h2, h3 {
+  font-family: Open Sans;
+  font-weight: 800;
+}
+
+a {
+  font-family: Open Sans;
+  font-weight: 600;
 }
 
 strong {
@@ -34,6 +47,7 @@ a {
     color:#000;
     font-weight:700;
     text-shadow:none;
+    text-decoration: none;
 }
 
 h1 a {
@@ -48,50 +62,34 @@ article {
 
 section {
     min-width:300px;
-    max-width:800px;
-    padding-left:140px;
+    max-width:850px;
     padding-bottom:40px;
+    padding-left:100px;
+    padding-right:100px;
     color:#171e22;
 }
 
-#body_container {
-    margin-top:75px;
-}
 
 header {
-    top:0;
-    position:fixed;
-    z-index:50;
-    background-color:#333;
-    -moz-box-shadow:0 0 4px rgba(113,113,113,0.79);
-    -webkit-box-shadow:0 0 4px rgba(113,113,113,0.79);
-    box-shadow:0 0 4px rgba(113,113,113,0.79);
     margin-bottom:40px;
-    width:100%;
+    padding-top:50px;
+    padding-left:100px;
 }
 
 header h1 {
-    color:#FFF;
     text-shadow:none;
-    float:left;
     margin:0;
-    padding:10px 50px 10px 10px;
 }
 
 header h1 .title {
     font-weight:400;
     font-style:italic;
     font-size:.9em;
-    font-family:Georgia;
+    font-family:Palatino;
 }
 
 header h1 a {
     text-shadow:none;
-    color:#FFF;
-}
-
-header h1 a:hover {
-    color:#FFF;
 }
 
 .read_more {
@@ -100,7 +98,8 @@ header h1 a:hover {
 }
 
 .date {
-    color:#ccc;
+    font-weight: 700;
+    color:#aaa;
     font-size:.9em;
     float:right;
     margin-right:30px;
