@@ -28,6 +28,10 @@ main = hakyllWith config $ do
         route   idRoute
         compile compressCssCompiler
 
+    match "CNAME" $ do
+      route idRoute
+      compile copyFileCompiler
+
     match (fromList ["about.markdown", "contact.markdown"]) $ do
          route   $ setExtension "html"
          compile $ pandocCompiler'
