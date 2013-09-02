@@ -4,3 +4,4 @@ _cache
 *.hi
 *~
 site
+_site
