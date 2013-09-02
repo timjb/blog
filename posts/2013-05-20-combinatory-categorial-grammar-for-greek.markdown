@@ -1,5 +1,5 @@
 ----
-title: Combinatory Categorical Grammar for Ancient Greek
+title: Combinatory Categorial Grammar for Ancient Greek
 ----
 
 This is the first in a series I intend to write in regard to the syntax
