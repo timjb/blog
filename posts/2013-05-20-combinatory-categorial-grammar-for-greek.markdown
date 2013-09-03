@@ -152,11 +152,11 @@ $$\begin{align}
 Next, we need to provide semantic denotations for our lexicon:
 
 $$\begin{align}
-⟦\text{δητα}⟧      &\mapsto \lambda x.\,x\\
-⟦\text{οισθα}⟧     &\mapsto \lambda x.\,\text{“you know”}(x)\\
-⟦\text{την}⟧       &\mapsto \lambda p.\,\iota z.\,p(z)\\
-⟦\text{Ευρυτειαν}⟧ &\mapsto \lambda p.\,\lambda x.\, p(x) \land \text{“of Eurytus”}(x)\\
-⟦\text{παρθενον}⟧  &\mapsto \lambda x.\,\text{“girl”}(x)
+⟦\gk{δῆτα}⟧      &\mapsto \lambda x.\,x\\
+⟦\gk{οἶσθα}⟧     &\mapsto \lambda x.\,\text{“you know”}(x)\\
+⟦\gk{τὴν}⟧       &\mapsto \lambda p.\,\iota z.\,p(z)\\
+⟦\gk{Εὐρυτείαν}⟧ &\mapsto \lambda p.\,\lambda x.\, p(x) \land \text{“of Eurytus”}(x)\\
+⟦\gk{παρθένον}⟧  &\mapsto \lambda x.\,\text{“girl”}(x)
 \end{align}$$
 
 And finally, we give denotations to the merge combinators as follows:
