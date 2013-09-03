@@ -114,8 +114,8 @@ $$
 to the following:
 
 $$
-\dfrac{\vdash e : Y\{\bar{Z}\} \quad \vdash e' : X \quad \vdash (|X) \in \bar{Z}}{\vdash e > e' : Y\{\bar{Z} \uplus \{|X\}\} \quad
-\vdash e' < e : Y\{\bar{Z} \uplus \{|X\}\}}
+\dfrac{\vdash e : Y\{\bar{Z}\} \quad \vdash e' : X \quad \vdash (|X) \in \bar{Z}}{\vdash e > e' : Y\{\bar{Z} - \{|X\}\} \quad
+\vdash e' < e : Y\{\bar{Z} - \{|X\}\}}
 $$
 
 Now, it is possible to derive the sentence which raw CCG fails with, as
