@@ -258,7 +258,7 @@ $$
   }{V\{D_\textit{acc}, \mathsf{nil}\}}<_\mathsf{top}
   \quad
   \dfrac{\gk{ἐκεῖνα}}{D_\textit{acc}}
-}{V}>
+}{V}>_\mathsf{top}
 $$
 
 $$
@@ -270,7 +270,7 @@ $$
   }{V\{D_\textit{acc}, \mathsf{nil}\}}<_{(\mathsf{pop}\ \mathsf{top})}
   \quad
   \dfrac{\gk{ἐκεῖνα}}{D_\textit{acc}}
-}{V}>
+}{V}>_\mathsf{top}
 $$
 
 and we may proceed by induction on the structure of syntactic
