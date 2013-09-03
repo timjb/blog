@@ -28,7 +28,12 @@
 MathJax.Hub.Config({
   'HTML-CSS': {
     availableFonts: [],
-    webFont: 'TeX'
+    webFont: 'TeX',
+  },
+  TeX: {
+    Macros: {
+      gk: ["\\style{font-family:Junicode!important; font-size:1.3em;}{\\text{#1}}", 1]
+    }
   }
 });
 </script>

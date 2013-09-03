@@ -29,7 +29,7 @@ h1 {
     font-size:20pt;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   font-family: Open Sans;
   font-weight: 800;
 }
@@ -176,7 +176,7 @@ blockquote {
 .language-gk,:lang(gk) {
     font-family:Junicode;
     font-style:normal;
-    font-size:1.4em;
+    font-size:1.3em;
     -moz-font-feature-settings:"kern=1, liga=1, dlig=1, hlig=1, clig=1";
     -ms-font-feature-settings:kern 1, liga 1, dlig 1, hlig 1, clig 1;
     -o-font-feature-settings:kern 1, liga 1, dlig 1, hlig 1, clig 1;
