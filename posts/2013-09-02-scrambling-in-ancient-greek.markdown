@@ -21,7 +21,8 @@ permissive and consider words modulo the direction in which they satisfy
 their arguments. As such, rather than the directional slash notation
 traditional in CCG, we shall be using bars to indicate unsatisfied
 arguments. So, we arrive at a grammar of types given by $N, D, V, P,
-\cdot|\cdot$.
+\cdot|\cdot$. Finally, I shall work in a restricted subset of CCG which
+does not include the type raising operator.
 
 
 ### The problem
@@ -118,8 +119,8 @@ $$
 \vdash e' < e : Y\{\bar{Z} - \{|X\}\}}
 $$
 
-Now, it is possible to derive the sentence which raw CCG fails with, as
-follows:
+Now, it is possible to derive the sentence which raw CCG minus type
+raising fails with, as follows:
 
 $$
 \dfrac{
