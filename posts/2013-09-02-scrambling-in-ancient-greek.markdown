@@ -104,7 +104,7 @@ for the very grammatical sentence, <span lang=gk>ἀπέκτεινε ὁ στρ�
 Beryl Hoffman in her 1995 dissertation[^hoffman95] presents a solution
 to the above problem by extending the CCG to include multisets for the
 arguments of function types. In essence, can now give the type for <span
-lang=gk>ἀπέκτεινε</span> as $V\{|D_\textit{acc}, |D_\textit{acc}\}$,
+lang=gk>ἀπέκτεινε</span> as $V\{|D_\textit{acc}, |D_\textit{nom}\}$,
 reformulating the typing rules for application from
 
 $$
