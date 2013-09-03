@@ -142,7 +142,7 @@ This all seems very nice and good, but in the course of this extension,
 we have inadvertently ended up sacrificing one of the most desirable
 aspects of the CCG, which is the transparent and deterministic interface
 between the semantics and the syntax of a construction. That is,
-unlike in plain CCG, from one syntactic derivation, I can prove two
+unlike in plain CCG, from one syntactic derivation, I can construct two
 distinct semantic propositions. Let's look at a pathological example
 brought about by the double-accusative construction in Greek.
 
