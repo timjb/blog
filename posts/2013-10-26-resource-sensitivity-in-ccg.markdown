@@ -141,7 +141,7 @@ $$\begin{equation}
 }\tag{inverted backward harmonic composition}
 \end{equation}$$
 
-With this in hand, we can retry out derivation of <span lang=gk>τῃδ' ἐν
+With this in hand, we can retry our derivation of <span lang=gk>τῃδ' ἐν
 ἡμέρᾳ</span>:
 
 $$
