@@ -118,7 +118,7 @@ Y_2$ and also $Y_1\ \gk{ἐν}\ Y_2$, but there is not a single instance of
 $Y_1\ \gk{ἐν}\cdots Y_2$: that is, when there has been a displacement
 of $Y_1$, $Y_2$ must remain glued to the head preposition.
 
-So we may tentatively consider the following sentence ungrammatical, or
+So we may tentatively consider the following phrase ungrammatical, or
 at least highly awkward: <span lang=gk style="color:red;">\*τοιοῖσδ' ἐν
 κειμένη κακοῖς</span>. Unfortunately, though, if we augment the CCG to
 be powerful enough to generate <span lang=gk>τοιοῖσδ' ἐν κακοῖς</span>,
@@ -156,5 +156,5 @@ $$
 }{P}\triangleright
 $$
 
-Whereas it would remain entirely impossible construct something like
+Whereas it would remain entirely impossible to construct something like
 <span lang=gk style="color:red;">\*τῇδ' ἐν ἔφη ἡμέρᾳ τάδε</span>.
