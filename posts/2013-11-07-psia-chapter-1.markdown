@@ -85,9 +85,10 @@ $$\begin{align}
 &p \mapsto (q : a < b) \mapsto\\
 &\qquad \mathbf{let}\ (x : \mathbb{R}) :\equiv \frac{b - a}{2}\ \mathbf{in}\\
 &\qquad \mathbf{let}\ (s : a < a + x) :\equiv \mathsf{compat}_+\ (\mathsf{compat}_\times\ (\mathsf{compat}_+\ q)\ \mathsf{trivial})\  \mathbf{in}\\
-&\qquad \mathbf{let}\ (u : b - x < b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
-&\qquad \mathbf{let}\ (v : b = a + (b - a)) :\equiv \mathsf{trivial}\ \mathbf{in}\\
-&\qquad p\ \langle a + x,\ (s,\ \mathsf{transport}\ (z\mapsto z - x < b)\ v\ u)\rangle
+&\qquad \mathbf{let}\ (t : b - x < b) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&\qquad \mathbf{let}\ (u : b = a + (b - a)) :\equiv \mathsf{trivial}\ \mathbf{in}\\
+&\qquad \mathbf{let}\ (v : a + x < b) :\equiv \mathsf{transport}\ (z\mapsto z - x < b)\ u\ t\ \mathbf{in}\\
+&\qquad p\ \langle a + x,\ (s,\ v)\rangle
 \end{align}$$
 </div>
 
