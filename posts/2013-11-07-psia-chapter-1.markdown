@@ -16,7 +16,7 @@ we will express as follows:
 $$\begin{align}
 ~\mathsf{transitivity} &: \prod_{a,b,c: \mathbb{R}} a < b \to b < c \to a < c\tag{1}\\
 \mathsf{strictness} &: \prod_{a:\mathbb{R}} a < a \to \bot\tag{2}\\
-\mathsf{compat}_+ &: \prod_{a,b,c:\mathbb{R}} a + c < b + c\tag{3}\\
+\mathsf{compat}_+ &: \prod_{a,b,c:\mathbb{R}} a < b \to a + c < b + c\tag{3}\\
 \mathsf{compat}_\times &: \prod_{a,b,c:\mathbb{R}} a < b \to 0 < c \to a\times c < b\times c\tag{4}\\
 \mathsf{distinction} &: \prod_{a:\mathbb{R}} 0 < a \lor a < 1\tag{5}\\
 \mathsf{ordering} &: \prod_{a,b:\mathbb{R}} (a = b \to \bot) \to a < b \lor b < a\tag{6}
