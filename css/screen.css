@@ -198,3 +198,31 @@ article img {
 h2,h1 a:hover {
     color:#444;
 }
+
+.theorem {
+    display: block;
+    margin: 12px 0;
+    font-style: italic;
+}
+
+.theorem strong {
+    font-weight: bold;
+    font-style: normal;
+}
+.proof {
+    display: block;
+    margin: 12px 0;
+    font-style: normal;
+}
+.proof:before {
+    content: "Proof.";
+    font-style: italic;
+}
+.proof:after {
+    content: "\25FB";
+    float:right;
+}
+.proof strong {
+    font-weight: bold;
+    font-style: normal;
+}
